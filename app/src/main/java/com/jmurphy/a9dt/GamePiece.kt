@@ -6,8 +6,7 @@ import kotlin.collections.HashMap
 data class GamePiece(
     val row: Int,
     val col: Int,
-    val player: Player,
-    val order: Int
+    val player: Player? = null
 )
 
 enum class Diagonal{
@@ -33,6 +32,8 @@ data class Game(
     val height: Int,
     val width: Int,
     val rules: Rules,
+    val player: Player,
+    val cpu: Player,
     val playerMoves: MutableList<GamePiece> = mutableListOf(),
     val cpuMoves: MutableList<GamePiece> = mutableListOf(),
     //all column values in sequence
@@ -40,7 +41,7 @@ data class Game(
     var winner: Player? = null
 
 ){
-    fun addMove(player: Player, piece: GamePiece): List<GamePiece>{
+    fun addMove(player: Player, piece: GamePiece){
         if (player.cpu){
             cpuMoves.add(piece)
         }
@@ -49,5 +50,9 @@ data class Game(
         }
 
         allMoves.add(piece.col)
+    }
+
+    fun getRowForDroppedPiece(column: Int): Int {
+        return allMoves.filter { it==column }.size
     }
 }

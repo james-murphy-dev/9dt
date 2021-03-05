@@ -6,11 +6,19 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 
 class GameViewModel(context: Application): AndroidViewModel(context) {
 
-    private val repo = GameRepository()
+    private val repo = GameRepository(context)
     private val gameLiveData = MutableLiveData<Game>()
+
+    private var winningRow = Integer.valueOf(context.getString(R.string.default_winning_row))
+    private var rules = getDefaultRules()
+
+    private fun getDefaultRules(): Rules {
+        return Rules(winningRow)
+    }
 
     val playerColor = context.getColor(R.color.player_color)
     val cpuColor = context.getColor(R.color.cpu_color)
@@ -31,7 +39,10 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    fun restartGame(startingPlayer: Player){
+        restartGame(startingPlayer, getDefaultRules())
+    }
+
     fun restartGame(startingPlayer: Player, rules: Rules) {
 
         val height = getApplication<Application>().getString(R.string.default_height)
@@ -43,13 +54,12 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
         cpu.rows.clear()
         cpu.columns.clear()
 
-        game = Game(startingPlayer, height.toInt(), width.toInt(), rules)
+        game = Game(startingPlayer, height.toInt(), width.toInt(), rules, player, cpu)
     }
 
-    fun addPiece(player: Player, row: Int, col: Int){
+    fun addPiece(newPiece: GamePiece){
 
-
-        val newPiece = GamePiece(row, col, player)
+        //increment row count
 
         //horizontal
         var piecesInRow = player.rows.getOrDefault(newPiece.row, 0)
@@ -64,19 +74,19 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
         //diagonal
         var diagonalPiecesItoIII = player.diagonals.getOrDefault(Diagonal.I_III, 0)
         if (newPiece.col==newPiece.row){
-            //I_III quadrant line
+            //I-III quadrant line
             diagonalPiecesItoIII++
             player.diagonals.put(Diagonal.I_III, diagonalPiecesItoIII)
         }
 
         var diagonalPiecesIItoIV = player.diagonals.getOrDefault(Diagonal.II_IV, 0)
         if (newPiece.col - 1 == game.height - newPiece.row){
-            //II_IV quadrant line
+            //II-IV quadrant line
             diagonalPiecesIItoIV++
             player.diagonals.put(Diagonal.II_IV, diagonalPiecesIItoIV)
         }
 
-        val moves: List<GamePiece> = game.addMove(player, newPiece)
+       game.addMove(player, newPiece)
 
         //check for winning move
         if (piecesInRow == game.rules.winningRow ||
@@ -86,44 +96,34 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
 
             setWinner(player)
         }
-        else{
+        else if (!player.cpu){
             repo.sendPlayerMove(game.allMoves)
         }
 
     }
 
-    private fun setWinner(player: Player) {
+    fun setWinner(player: Player?) {
         game.winner = player
         gameLiveData.value = game
     }
 
-    private fun winnerFound(newPiece: GamePiece, previousMoves: MutableList<GamePiece>): Boolean {
-        val rows = HashMap<Int, Int>()
-        val columns = HashMap<Int, Int>()
+    fun getCpuMove(): LiveData<GamePiece> {
+        return Transformations.map(repo.movesListLiveData) { movesList ->
+            val cpuLatestMove = movesList.get(-1)
 
+            val row = game.getRowForDroppedPiece(cpuLatestMove)
+            val col = cpuLatestMove
 
-        previousMoves.asReversed().forEachIndexed(){ index, gamePiece ->
-            if (gamePiece.col==newPiece.col){
-                var piecesInColumn = columns.
-                columns.put(g)
-            }
+            val piece = GamePiece(row, col, game.cpu)
 
-            if (gamePiece.row == newPiece.row){
+            addPiece(piece)
 
-                var piecesInRow = rows.getOrDefault(gamePiece.row, 0)
-                piecesInRow++
-
-                rows.put(gamePiece.row, piecesInRow)
-            }
+            piece
         }
-        //check diagonally
-        if (lastPiece.row== 0 || lastPiece.row==){
+    }
 
-        }
-
-        //check horizontally
-
-        //check vertically
+    fun getPlayer(): Player {
+        return game.player
     }
 
 

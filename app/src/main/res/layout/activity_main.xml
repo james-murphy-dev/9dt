@@ -6,7 +6,128 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <RelativeLayout
+        android:id="@+id/text_background"
+        android:background="#8d8d8d"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+         <androidx.constraintlayout.widget.Group
+             android:id="@+id/game_over"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:visibility="gone"
+             app:constraint_referenced_ids="win_label, reset_btn"
+             />
+        <TextView
+            android:id="@+id/win_label"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:textSize="50sp"
+            android:text="Win"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/reset_btn"
+            android:layout_below="@id/win_label"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="35sp"
+            android:text="Play again?"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+        <TextView
+            android:layout_alignParentStart="true"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="35sp"
+            android:text="New Game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+
+
+        <!-- Start screen -->
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/new_game"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="start_title, start_btns"
+            />
+
+        <TextView
+            android:id="@+id/start_title"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="35sp"
+            android:text="Choose starting move"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/start_btns"
+            android:layout_below="@id/start_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/player_start_btn"
+                android:textColor="@color/player_color"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="20dp"
+                android:textSize="35sp"
+                android:text="Me"
+                android:gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_weight="1"
+                android:id="@+id/cpu_start_btn"
+                android:gravity="center"
+                android:textColor="@color/cpu_color"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="20dp"
+                android:textSize="35sp"
+                android:text="CPU"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
     <include
+        android:id="@+id/game_board"
         layout="@layout/game_board"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -3,4 +3,5 @@
     <string name="base_url">https://w0ayb2ph1k.execute-api.us-west-2.amazonaws.com/production</string>
     <string name="default_height">4</string>
     <string name="default_width">4</string>
+    <string name="default_winning_row">4</string>
 </resources>
