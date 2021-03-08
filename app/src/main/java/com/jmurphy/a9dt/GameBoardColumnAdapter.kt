@@ -35,6 +35,11 @@ class GameBoardColumnAdapter(val column: Int, val height: Int): RecyclerView.Ada
             holder.emptyBackground.visibility = View.INVISIBLE
             holder.playerBackground.visibility = View.VISIBLE
         }
+        else{
+            holder.playerBackground.visibility = View.INVISIBLE
+            holder.cpuBackground.visibility = View.INVISIBLE
+            holder.emptyBackground.visibility = View.VISIBLE
+        }
 
     }
 
@@ -52,7 +57,8 @@ class GameBoardColumnAdapter(val column: Int, val height: Int): RecyclerView.Ada
     }
 
     fun clearColumn() {
-        values = createColumn()
+        values.clear()
+        values.addAll(createColumn())
         notifyDataSetChanged()
     }
 }

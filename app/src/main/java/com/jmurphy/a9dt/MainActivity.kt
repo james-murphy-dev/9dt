@@ -87,12 +87,6 @@ class MainActivity : AppCompatActivity() {
         val col2 = gameBoard.findViewById<RecyclerView>(R.id.col_2_rv)
         val col3 = gameBoard.findViewById<RecyclerView>(R.id.col_3_rv)
         val col4 = gameBoard.findViewById<RecyclerView>(R.id.column_4)
-
-        col1Btn = findViewById(R.id.col_1_btn)
-        col2Btn = findViewById(R.id.col_2_btn)
-        col3Btn = findViewById(R.id.col_3_btn)
-        col4Btn = findViewById(R.id.col_4_btn)
-
         val columns: List<RecyclerView> = listOf(col1, col2, col3, col4)
 
         val height = applicationContext.getString(R.string.default_height)
@@ -109,15 +103,17 @@ class MainActivity : AppCompatActivity() {
             val columnBtn = viewGroup.getChildAt(1)
 
             columnBtn.setOnClickListener{
-                val row = adapter.getFilledRows()
-                val player = viewModel.getPlayer()
-                val gamePiece = GamePiece(row, index, player)
 
-                dropGamePiece(gamePiece, adapter)
+                if (adapter.getFilledRows()!=adapter.height){
+                    val row = adapter.getFilledRows()
+                    val player = viewModel.getPlayer()
+                    val gamePiece = GamePiece(row, index, player)
 
-                gameBoard.isEnabled = false
+                    dropGamePiece(gamePiece, adapter)
+
+                    gameBoard.isEnabled = false
+                }
             }
-
             adapters.add(adapter)
         }
 
@@ -125,21 +121,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resetGameBoard(startingPlayer: Player){
-        adapters.forEach{ it.clearColumn() }
-
-        viewModel.restartGame(startingPlayer)
+        adapters.forEach{
+            it.clearColumn()
+        }
 
         background.visibility = View.GONE
         newGameScreen.visibility = View.GONE
 
+        viewModel.restartGame(startingPlayer)
     }
 
     private fun dropGamePiece(piece: GamePiece, adapter: GameBoardColumnAdapter) {
         adapter.addPiece(piece)
         viewModel.addPiece(piece)
-        if (gameBoardFilled()){
-
-        }
         gameBoard.isEnabled = true
     }
 
