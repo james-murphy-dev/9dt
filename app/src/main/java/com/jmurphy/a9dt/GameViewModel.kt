@@ -32,10 +32,8 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
     }
 
     fun createGame(){
-        val playerColorHex = Integer.toHexString(playerColor)
-        val cpuColorHex = Integer.toHexString(cpuColor)
-        player = Player(false, playerColorHex)
-        cpu = Player(true, cpuColorHex)
+        player = Player(false, playerColor)
+        cpu = Player(true, cpuColor)
 
     }
 

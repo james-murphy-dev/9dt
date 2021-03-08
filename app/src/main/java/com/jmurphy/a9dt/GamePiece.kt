@@ -18,7 +18,7 @@ enum class Diagonal{
 
 data class Player(
     val cpu: Boolean,
-    val color: String,
+    val color: Int,
     val rows: HashMap<Int, Int> = HashMap(),
     val columns: HashMap<Int, Int> = HashMap(),
     val diagonals: EnumMap<Diagonal, Int> = EnumMap(Diagonal::class.java)
