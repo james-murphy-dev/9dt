@@ -24,10 +24,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var gameOverScreen: Group
     private lateinit var newGameScreen: Group
 
-    private lateinit var col1Btn: RelativeLayout
-    private lateinit var col2Btn: RelativeLayout
-    private lateinit var col3Btn: RelativeLayout
-    private lateinit var col4Btn: RelativeLayout
+    val playerColor = Integer.toHexString(applicationContext.getColor(R.color.player_color))
+
+    val cpuColor = Integer.toHexString(applicationContext.getColor(R.color.cpu_color))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +48,12 @@ class MainActivity : AppCompatActivity() {
         val cpuStartBtn = background.findViewById<TextView>(R.id.cpu_start_btn)
 
         playerStartBtn.setOnClickListener {
-            val color = Integer.toHexString(applicationContext.getColor(R.color.player_color))
-            val startingMove = Player(false, color)
+            val startingMove = Player(false, playerColor)
             resetGameBoard(startingMove)
         }
 
         cpuStartBtn.setOnClickListener {
-            val color = Integer.toHexString(applicationContext.getColor(R.color.cpu_color))
-            val startingMove = Player(true, color)
+            val startingMove = Player(true, cpuColor)
             resetGameBoard(startingMove)
         }
 
@@ -64,6 +61,9 @@ class MainActivity : AppCompatActivity() {
             if (gameBoard.winner!=null){
                 //winner declared
                 background.visibility = View.VISIBLE
+
+                val label = gameOverScreen.findViewById<TextView>(R.id.win_label)
+                val color = gameBoard.winner?.color
                 gameOverScreen.visibility = View.VISIBLE
             }
             else if (gameBoard.draw!=null && gameBoard.draw!!){

@@ -50,9 +50,11 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
 
         player.rows.clear()
         player.columns.clear()
+        player.diagonals.clear()
 
         cpu.rows.clear()
         cpu.columns.clear()
+        cpu.diagonals.clear()
 
         game = Game(startingPlayer, height.toInt(), width.toInt(), rules, player, cpu)
 
