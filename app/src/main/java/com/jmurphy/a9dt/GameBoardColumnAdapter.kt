@@ -27,11 +27,11 @@ class GameBoardColumnAdapter(val column: Int, val height: Int): RecyclerView.Ada
     override fun onBindViewHolder(holder: GamePieceViewHolder, position: Int) {
         val item = values[position]
 
-        if (item.player?.cpu!!){
+        if (item.player?.cpu == true){
             holder.emptyBackground.visibility = View.INVISIBLE
             holder.cpuBackground.visibility = View.VISIBLE
         }
-        else if (!item.player.cpu){
+        else if (item.player?.cpu == false){
             holder.emptyBackground.visibility = View.INVISIBLE
             holder.playerBackground.visibility = View.VISIBLE
         }
@@ -40,6 +40,10 @@ class GameBoardColumnAdapter(val column: Int, val height: Int): RecyclerView.Ada
 
     override fun getItemCount(): Int {
         return values.size
+    }
+
+    fun getFilledRows(): Int {
+        return values.filter { it.player!=null }.size
     }
 
     fun addPiece(piece: GamePiece){

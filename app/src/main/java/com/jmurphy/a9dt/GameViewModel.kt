@@ -55,12 +55,15 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
         cpu.columns.clear()
 
         game = Game(startingPlayer, height.toInt(), width.toInt(), rules, player, cpu)
+
+        if (startingPlayer.cpu){
+            repo.sendPlayerMove(game.allMoves)
+        }
     }
 
     fun addPiece(newPiece: GamePiece){
 
-        //increment row count
-
+        val player = newPiece.player!!
         //horizontal
         var piecesInRow = player.rows.getOrDefault(newPiece.row, 0)
         piecesInRow++
@@ -86,10 +89,15 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
             player.diagonals.put(Diagonal.II_IV, diagonalPiecesIItoIV)
         }
 
-       game.addMove(player, newPiece)
+       game.addMove(newPiece)
 
+        //check for draw
+        if (game.allMoves.size == game.height * game.width){
+            game.draw = true
+            gameLiveData.value = game
+        }
         //check for winning move
-        if (piecesInRow == game.rules.winningRow ||
+        else if (piecesInRow == game.rules.winningRow ||
             piecesInColumn == game.rules.winningRow ||
             diagonalPiecesIItoIV == game.rules.winningRow ||
             diagonalPiecesItoIII == game.rules.winningRow){
@@ -109,14 +117,14 @@ class GameViewModel(context: Application): AndroidViewModel(context) {
 
     fun getCpuMove(): LiveData<GamePiece> {
         return Transformations.map(repo.movesListLiveData) { movesList ->
-            val cpuLatestMove = movesList.get(-1)
+            val cpuLatestMove = movesList.last()
 
             val row = game.getRowForDroppedPiece(cpuLatestMove)
             val col = cpuLatestMove
 
             val piece = GamePiece(row, col, game.cpu)
 
-            addPiece(piece)
+            //addPiece(piece)
 
             piece
         }

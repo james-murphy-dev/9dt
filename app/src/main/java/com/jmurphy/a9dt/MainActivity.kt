@@ -3,6 +3,7 @@ package com.jmurphy.a9dt
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -18,10 +19,15 @@ class MainActivity : AppCompatActivity() {
     private val adapters = mutableListOf<GameBoardColumnAdapter>()
 
     private lateinit var gameBoard: ConstraintLayout
-    private lateinit var background: RelativeLayout
+    private lateinit var background: ConstraintLayout
 
     private lateinit var gameOverScreen: Group
     private lateinit var newGameScreen: Group
+
+    private lateinit var col1Btn: RelativeLayout
+    private lateinit var col2Btn: RelativeLayout
+    private lateinit var col3Btn: RelativeLayout
+    private lateinit var col4Btn: RelativeLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         gameOverScreen = findViewById(R.id.game_over)
         newGameScreen = findViewById(R.id.new_game)
+
 
         val resetBtn = background.findViewById<TextView>(R.id.reset_btn)
         resetBtn.setOnClickListener {
@@ -44,29 +51,22 @@ class MainActivity : AppCompatActivity() {
         playerStartBtn.setOnClickListener {
             val color = Integer.toHexString(applicationContext.getColor(R.color.player_color))
             val startingMove = Player(false, color)
-
-            viewModel.restartGame(startingMove)
-            background.visibility = View.GONE
-
             resetGameBoard(startingMove)
         }
 
         cpuStartBtn.setOnClickListener {
             val color = Integer.toHexString(applicationContext.getColor(R.color.cpu_color))
-            val player = Player(true, color)
-
-            viewModel.restartGame(player)
-            background.visibility = View.GONE
-
-            resetGameBoard(player)
+            val startingMove = Player(true, color)
+            resetGameBoard(startingMove)
         }
-
-        setupGameBoard()
-
 
         viewModel.getGameData().observe(this, { gameBoard ->
             if (gameBoard.winner!=null){
                 //winner declared
+                background.visibility = View.VISIBLE
+                gameOverScreen.visibility = View.VISIBLE
+            }
+            else if (gameBoard.draw!=null && gameBoard.draw!!){
                 background.visibility = View.VISIBLE
                 gameOverScreen.visibility = View.VISIBLE
             }
@@ -75,18 +75,28 @@ class MainActivity : AppCompatActivity() {
         viewModel.getCpuMove().observe(this, {
             dropGamePiece(it, adapters[it.col])
         })
+
+        setupGameBoard()
+
     }
 
     private fun setupGameBoard() {
+        viewModel.createGame()
 
-        val col1 = gameBoard.findViewById<RecyclerView>(R.id.column_1)
-        val col2 = gameBoard.findViewById<RecyclerView>(R.id.column_2)
-        val col3 = gameBoard.findViewById<RecyclerView>(R.id.column_3)
+        val col1 = gameBoard.findViewById<RecyclerView>(R.id.col_1_rv)
+        val col2 = gameBoard.findViewById<RecyclerView>(R.id.col_2_rv)
+        val col3 = gameBoard.findViewById<RecyclerView>(R.id.col_3_rv)
         val col4 = gameBoard.findViewById<RecyclerView>(R.id.column_4)
+
+        col1Btn = findViewById(R.id.col_1_btn)
+        col2Btn = findViewById(R.id.col_2_btn)
+        col3Btn = findViewById(R.id.col_3_btn)
+        col4Btn = findViewById(R.id.col_4_btn)
 
         val columns: List<RecyclerView> = listOf(col1, col2, col3, col4)
 
         val height = applicationContext.getString(R.string.default_height)
+
         columns.forEachIndexed{ index, column ->
             val adapter = GameBoardColumnAdapter(index, Integer.valueOf(height))
             val layoutManager = LinearLayoutManager(applicationContext)
@@ -94,29 +104,48 @@ class MainActivity : AppCompatActivity() {
             column.adapter = adapter
             column.layoutManager = layoutManager
 
-            column.setOnClickListener{
-                val row = adapter.itemCount - 1
+            val viewGroup: ViewGroup = column.parent as ViewGroup
+
+            val columnBtn = viewGroup.getChildAt(1)
+
+            columnBtn.setOnClickListener{
+                val row = adapter.getFilledRows()
                 val player = viewModel.getPlayer()
                 val gamePiece = GamePiece(row, index, player)
 
                 dropGamePiece(gamePiece, adapter)
+
+                gameBoard.isEnabled = false
             }
 
             adapters.add(adapter)
         }
+
+        newGame()
     }
 
     private fun resetGameBoard(startingPlayer: Player){
-        adapters.forEach{
-            it.clearColumn()
-        }
+        adapters.forEach{ it.clearColumn() }
 
         viewModel.restartGame(startingPlayer)
+
+        background.visibility = View.GONE
+        newGameScreen.visibility = View.GONE
+
     }
 
     private fun dropGamePiece(piece: GamePiece, adapter: GameBoardColumnAdapter) {
         adapter.addPiece(piece)
         viewModel.addPiece(piece)
+        if (gameBoardFilled()){
+
+        }
+        gameBoard.isEnabled = true
+    }
+
+    private fun gameBoardFilled(): Boolean {
+
+        return adapters.filter {  it.getFilledRows()==it.itemCount }.size==adapters.size
     }
 
 

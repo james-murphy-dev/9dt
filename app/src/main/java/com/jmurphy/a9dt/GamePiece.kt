@@ -38,11 +38,12 @@ data class Game(
     val cpuMoves: MutableList<GamePiece> = mutableListOf(),
     //all column values in sequence
     val allMoves: MutableList<Int> = mutableListOf(),
-    var winner: Player? = null
+    var winner: Player? = null,
+    var draw: Boolean? = null
 
 ){
-    fun addMove(player: Player, piece: GamePiece){
-        if (player.cpu){
+    fun addMove(piece: GamePiece){
+        if (piece.player?.cpu!!){
             cpuMoves.add(piece)
         }
         else{

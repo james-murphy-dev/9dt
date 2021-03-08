@@ -6,7 +6,7 @@ import retrofit2.http.Query
 
 interface GameEndpoints {
 
-    @GET
-    fun getMoves(@Query("moves") moves: List<Int>): Call<List<Int>>
+    @GET(".")
+    fun getMoves(@Query("moves") moves: String): Call<List<Int>>
 
 }

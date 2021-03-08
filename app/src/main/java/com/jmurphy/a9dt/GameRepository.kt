@@ -6,6 +6,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class GameRepository(context: Context) {
 
@@ -13,7 +14,7 @@ class GameRepository(context: Context) {
 
     val httpClient = Retrofit.Builder()
         .baseUrl(baseUrl)
-  //      .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(GsonConverterFactory.create())
   //      .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
 //         .client(movieApiClient)
         .build()
@@ -24,13 +25,9 @@ class GameRepository(context: Context) {
     val movesListLiveData = MutableLiveData<List<Int>>()
 
     fun sendPlayerMove(moves: List<Int>){
-        apiClient.getMoves(moves).enqueue(object: Callback<List<Int>>{
+        val param = moves.toString()
+        apiClient.getMoves(param).enqueue(object: Callback<List<Int>>{
             override fun onResponse(call: Call<List<Int>>, response: Response<List<Int>>) {
-
-               /* val playerMoves = mutableListOf<Int>()
-                val botMoves = mutableListOf<Int>()
-                response.body()?.forEachIndexed(){ index, item ->
-                }*/
                 movesListLiveData.postValue(response.body())
             }
 
