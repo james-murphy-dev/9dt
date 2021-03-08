@@ -153,6 +153,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun newGame() {
+        findViewById<TextView>(R.id.draw_label).visibility = View.GONE
         gameOverScreen.visibility = View.GONE
         newGameScreen.visibility = View.VISIBLE
     }
