@@ -40,7 +40,6 @@ data class Game(
     val allMoves: MutableList<Int> = mutableListOf(),
     var winner: Player? = null,
     var draw: Boolean? = null
-
 ){
     fun addMove(piece: GamePiece){
         if (piece.player?.cpu!!){
